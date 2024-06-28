@@ -16,7 +16,9 @@ export default async function middleware(
   const environment = createEnvironment(loader);
   loader.addPath(path.resolve(root));
   const api = (
-    typeof apiSource === "string" ? require(path.resolve(apiSource)) : apiSource
+    typeof apiSource === "string"
+      ? (await import("C:/njin/njin.co.id/dist/server/api.js")).default
+      : apiSource
   ) as {
     [key in string]: () => Promise<Record<string, any>>;
   };
