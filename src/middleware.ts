@@ -17,7 +17,7 @@ export default async function middleware(
   loader.addPath(path.resolve(root));
   const api = (
     typeof apiSource === "string"
-      ? (await import(path.resolve(apiSource))).default
+      ? (await import(`file:///${path.resolve(apiSource)}`)).default
       : apiSource
   ) as {
     [key in string]: () => Promise<Record<string, any>>;
