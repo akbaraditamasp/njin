@@ -34,7 +34,6 @@ const plugin = (userConfig?: NjinConfig): Plugin[] => {
           ...config,
           build: {
             ...config.build,
-            outDir: "./dist/client",
             rollupOptions: {
               ...config.build?.rollupOptions,
               input: fg

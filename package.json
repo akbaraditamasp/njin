@@ -1,6 +1,6 @@
 {
   "name": "@akbaraditamasp/njin",
-  "version": "1.0.6",
+  "version": "1.0.7",
   "description": "Vite Plugin for Making SSR Web Using Twig Engine",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
@@ -32,7 +32,6 @@
   "devDependencies": {
     "@types/express": "^4.17.21",
     "@types/node": "^20.14.9",
-    "ts-node": "^10.9.2",
     "typescript": "^5.5.2",
     "vite-node": "^1.6.0"
   },
