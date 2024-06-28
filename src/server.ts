@@ -1,0 +1,79 @@
+import fs from "fs";
+import path from "path";
+import { createEnvironment, createFilesystemLoader } from "twing";
+import { Connect, ViteDevServer } from "vite";
+
+export default function server(
+  root: string,
+  vite?: ViteDevServer
+): Connect.NextHandleFunction {
+  const loader = createFilesystemLoader(fs);
+  const environment = createEnvironment(loader);
+  loader.addPath(path.resolve(root));
+
+  return async (req, res) => {
+    const url = new URL(req.originalUrl!, "http://localhost");
+    const paths = url.pathname.replace(/^\//, "").split("/");
+    let template = "";
+    let params: string[] = [];
+    let context: Record<string, any>;
+
+    const resolved: {
+      path: string;
+      params: string[];
+    }[] = [
+      { path: path.join("pages", ...paths), params: [] },
+      { path: path.join("pages", ...paths, "index"), params: [] },
+    ];
+
+    for (let index = 1; index <= paths.length; index++) {
+      resolved.push({
+        path: path.join(
+          "pages",
+          ...paths.slice(0, 0 - index),
+          ...Array(index).fill("_")
+        ),
+        params: paths.slice(paths.length - index),
+      });
+    }
+
+    for (const check of resolved) {
+      if (fs.existsSync(path.resolve(root, check.path + ".html"))) {
+        template = check.path;
+        params = check.params;
+        break;
+      }
+    }
+
+    if (!template && !fs.existsSync(path.resolve(root, "pages\\404.html"))) {
+      res.statusCode = 404;
+      res.write("Not Found");
+
+      return res.end();
+    }
+
+    const html = vite
+      ? await vite.transformIndexHtml(
+          req.originalUrl!,
+          await environment.render(
+            template ? template + ".html" : "pages\\404.html",
+            {
+              ...(context! || {}),
+              params,
+            }
+          )
+        )
+      : await environment.render(
+          template ? template + ".html" : "pages\\404.html",
+          {
+            ...(context! || {}),
+            params,
+          }
+        );
+
+    res.statusCode = 200;
+    res.write(html);
+
+    return res.end();
+  };
+}

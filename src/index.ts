@@ -1,81 +1,20 @@
 import fg from "fast-glob";
-import fs from "fs";
 import path from "path";
-import { createEnvironment, createFilesystemLoader } from "twing";
 import { Plugin, normalizePath } from "vite";
+import server from "./server.js";
 
 export type NjinConfig = {
   input?: string[];
 };
 
 const plugin = (userConfig?: NjinConfig): Plugin[] => {
-  const loader = createFilesystemLoader(fs);
-  const environment = createEnvironment(loader);
-  loader.addPath(path.resolve("src"));
-
   return [
     {
       name: "@njin/vite-plugin-core",
       apply: "serve",
       configureServer: (vite) => {
         return () => {
-          vite.middlewares.use(async (req, res) => {
-            const url = new URL(req.originalUrl!, "http://localhost");
-            const paths = url.pathname.replace(/^\//, "").split("/");
-            let template = "";
-            let params: string[] = [];
-            let context: Record<string, any>;
-
-            const resolved: {
-              path: string;
-              params: string[];
-            }[] = [
-              { path: path.join("pages", ...paths), params: [] },
-              { path: path.join("pages", ...paths, "index"), params: [] },
-            ];
-
-            for (let index = 1; index <= paths.length; index++) {
-              resolved.push({
-                path: path.join(
-                  "pages",
-                  ...paths.slice(0, 0 - index),
-                  ...Array(index).fill("_")
-                ),
-                params: paths.slice(paths.length - index),
-              });
-            }
-
-            for (const check of resolved) {
-              if (fs.existsSync(path.resolve("src", check.path + ".html"))) {
-                template = check.path;
-                params = check.params;
-                break;
-              }
-            }
-
-            if (!template) {
-              res.statusCode = 404;
-              res.write("Not Found");
-
-              return res.end();
-            }
-
-            const html = await vite.transformIndexHtml(
-              req.originalUrl!,
-              await environment.render(
-                template ? template + ".html" : "pages\\404.html",
-                {
-                  ...(context! || {}),
-                  params,
-                }
-              )
-            );
-
-            res.statusCode = 200;
-            res.write(html);
-
-            return res.end();
-          });
+          vite.middlewares.use(server("src", vite));
         };
       },
       handleHotUpdate: ({ server, file }) => {
@@ -111,4 +50,4 @@ const plugin = (userConfig?: NjinConfig): Plugin[] => {
   ];
 };
 
-export default plugin;
+export default { njin: plugin, middleware: server };
