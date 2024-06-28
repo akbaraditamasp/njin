@@ -1,6 +1,6 @@
-import middleware from "./middleware";
-import plugin from "./plugin";
-import server from "./server";
+import middleware from "./middleware.js";
+import plugin from "./plugin.js";
+import server from "./server.js";
 
 const njin = {
   middleware,
