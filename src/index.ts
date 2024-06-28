@@ -5,6 +5,9 @@ import server from "./server.js";
 
 export type NjinConfig = {
   input?: string[];
+  api?: {
+    [key in string]: () => Promise<Record<string, any>>;
+  };
 };
 
 const plugin = (userConfig?: NjinConfig): Plugin[] => {
@@ -14,7 +17,7 @@ const plugin = (userConfig?: NjinConfig): Plugin[] => {
       apply: "serve",
       configureServer: (vite) => {
         return () => {
-          vite.middlewares.use(server("src", vite));
+          vite.middlewares.use(server("src", vite, userConfig?.api));
         };
       },
       handleHotUpdate: ({ server, file }) => {

@@ -5,7 +5,10 @@ import { Connect, ViteDevServer } from "vite";
 
 export default function server(
   root: string,
-  vite?: ViteDevServer
+  vite?: ViteDevServer,
+  api: {
+    [key in string]: () => Promise<Record<string, any>>;
+  } = {}
 ): Connect.NextHandleFunction {
   const loader = createFilesystemLoader(fs);
   const environment = createEnvironment(loader);
@@ -15,8 +18,7 @@ export default function server(
     const url = new URL(req.originalUrl!, "http://localhost");
     const paths = url.pathname.replace(/^\//, "").split("/");
     let template = "";
-    let params: string[] = [];
-    let context: Record<string, any>;
+    let context: Record<string, any> = {};
 
     const resolved: {
       path: string;
@@ -40,7 +42,10 @@ export default function server(
     for (const check of resolved) {
       if (fs.existsSync(path.resolve(root, check.path + ".html"))) {
         template = check.path;
-        params = check.params;
+        context = {
+          ...context,
+          params: check.params,
+        };
         break;
       }
     }
@@ -52,23 +57,31 @@ export default function server(
       return res.end();
     }
 
+    if (api[template]) {
+      context = {
+        ...context,
+        data: await api[template](),
+      };
+    }
+
+    if (api["root"]) {
+      context = {
+        ...context,
+        root: await api["root"](),
+      };
+    }
+
     const html = vite
       ? await vite.transformIndexHtml(
           req.originalUrl!,
           await environment.render(
             template ? template + ".html" : "pages\\404.html",
-            {
-              ...(context! || {}),
-              params,
-            }
+            context
           )
         )
       : await environment.render(
           template ? template + ".html" : "pages\\404.html",
-          {
-            ...(context! || {}),
-            params,
-          }
+          context
         );
 
     res.statusCode = 200;
