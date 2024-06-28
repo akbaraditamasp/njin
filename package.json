@@ -1,0 +1,37 @@
+{
+  "name": "njin",
+  "version": "1.0.0",
+  "description": "Vite Plugin for Making SSR Web Using Twig Engine",
+  "main": "/dist/index.js",
+  "scripts": {
+    "build": "tsc",
+    "prepublishOnly": "npm run build"
+  },
+  "files": [
+    "dist"
+  ],
+  "keywords": [
+    "vite",
+    "vite plugin",
+    "vite plugin twig",
+    "vite plugin ssr",
+    "vite plugin twig ssr"
+  ],
+  "author": "akbaraditamasp <akbaraditamasp@gmail.com>",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/akbaraditamasp/njin.git"
+  },
+  "homepage": "https://github.com/akbaraditamasp/njin",
+  "license": "MIT",
+  "type": "module",
+  "devDependencies": {
+    "@types/node": "^20.14.9",
+    "typescript": "^5.5.2"
+  },
+  "dependencies": {
+    "fast-glob": "^3.3.2",
+    "twing": "^7.0.0-beta.3",
+    "vite": "^5.3.2"
+  }
+}
