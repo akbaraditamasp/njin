@@ -1,6 +1,6 @@
 {
   "name": "@akbaraditamasp/njin",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "Vite Plugin for Making SSR Web Using Twig Engine",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
