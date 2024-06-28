@@ -12,10 +12,10 @@ program
 program
   .command("run")
   .description("Running the Njin Server")
-  .option("-p", "--port <char>", "port server")
-  .option("-r", "--root <char>", "root path for client")
-  .option("-a", "--api <char>", "api path for client")
-  .action(({ port, root, api }) => {
+  .argument("<ROOT>", "root path for client")
+  .option("-p, --port <char>", "port server")
+  .option("-a, --api <char>", "api path for client")
+  .action((root, { port, api }) => {
     server(root, port, api);
   });
 
