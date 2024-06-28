@@ -17,7 +17,7 @@ export default async function middleware(
   loader.addPath(path.resolve(root));
   const api = (
     typeof apiSource === "string"
-      ? (await import("C:/njin/njin.co.id/dist/server/api.js")).default
+      ? (await import(apiSource)).default
       : apiSource
   ) as {
     [key in string]: () => Promise<Record<string, any>>;
