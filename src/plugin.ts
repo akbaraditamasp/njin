@@ -1,7 +1,7 @@
 import fg from "fast-glob";
 import path from "path";
 import { Plugin, normalizePath } from "vite";
-import server from "./server.js";
+import server from "./middleware.js";
 
 export type NjinConfig = {
   input?: string[];
@@ -16,8 +16,8 @@ const plugin = (userConfig?: NjinConfig): Plugin[] => {
       name: "@njin/vite-plugin-core",
       apply: "serve",
       configureServer: (vite) => {
-        return () => {
-          vite.middlewares.use(server("src", vite, userConfig?.api));
+        return async () => {
+          vite.middlewares.use(await server("src", vite, userConfig?.api));
         };
       },
       handleHotUpdate: ({ server, file }) => {
@@ -34,6 +34,7 @@ const plugin = (userConfig?: NjinConfig): Plugin[] => {
           ...config,
           build: {
             ...config.build,
+            outDir: "./dist/client",
             rollupOptions: {
               ...config.build?.rollupOptions,
               input: fg
@@ -53,4 +54,4 @@ const plugin = (userConfig?: NjinConfig): Plugin[] => {
   ];
 };
 
-export default { njin: plugin, middleware: server };
+export default plugin;
