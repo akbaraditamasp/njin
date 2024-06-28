@@ -1,5 +1,6 @@
+#!/usr/bin/env node
 import { Command } from "commander";
-import server from "./server";
+import server from "./server.js";
 
 const program = new Command();
 

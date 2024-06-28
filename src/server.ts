@@ -1,5 +1,5 @@
 import express from "express";
-import middleware from "./middleware";
+import middleware from "./middleware.js";
 import path from "path";
 
 export default async function server(
