@@ -16,8 +16,8 @@ const plugin = (userConfig?: NjinConfig): Plugin[] => {
       name: "@njin/vite-plugin-core",
       apply: "serve",
       configureServer: (vite) => {
-        return async () => {
-          vite.middlewares.use(await server("src", vite, userConfig?.api));
+        return () => {
+          vite.middlewares.use(server("src", vite, userConfig?.api));
         };
       },
       handleHotUpdate: ({ server, file }) => {

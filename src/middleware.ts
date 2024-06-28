@@ -3,7 +3,7 @@ import path from "path";
 import { createEnvironment, createFilesystemLoader } from "twing";
 import { Connect, ViteDevServer } from "vite";
 
-export default async function middleware(
+export default function middleware(
   root: string,
   vite?: ViteDevServer,
   apiSource:
@@ -11,19 +11,19 @@ export default async function middleware(
         [key in string]: () => Promise<Record<string, any>>;
       }
     | string = {}
-): Promise<Connect.NextHandleFunction> {
+): Connect.NextHandleFunction {
   const loader = createFilesystemLoader(fs);
   const environment = createEnvironment(loader);
   loader.addPath(path.resolve(root));
-  const api = (
-    typeof apiSource === "string"
-      ? (await import(`file:///${path.resolve(apiSource)}`)).default
-      : apiSource
-  ) as {
-    [key in string]: () => Promise<Record<string, any>>;
-  };
 
   return async (req, res) => {
+    const api = (
+      typeof apiSource === "string"
+        ? (await import(`file:///${path.resolve(apiSource)}`)).default
+        : apiSource
+    ) as {
+      [key in string]: () => Promise<Record<string, any>>;
+    };
     const url = new URL(req.originalUrl!, "http://localhost");
     const paths = url.pathname.replace(/^\//, "").split("/");
     let template = "";
