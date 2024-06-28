@@ -13,6 +13,9 @@ export default async function server(
 ) {
   const app = express();
 
+  app.use("/assets", express.static(path.resolve(root, "assets")));
+  app.use(express.static(path.resolve("public")));
+
   app.get("*", await middleware(path.join(root, "src"), undefined, api));
 
   app.listen(port, () => {
