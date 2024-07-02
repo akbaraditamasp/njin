@@ -14,7 +14,6 @@ export default function middleware(
 ): Connect.NextHandleFunction {
   const loader = createFilesystemLoader(fs);
   const environment = createEnvironment(loader);
-  loader.addPath(path.resolve(root));
 
   return async (req, res) => {
     const api = (
@@ -84,12 +83,12 @@ export default function middleware(
       ? await vite.transformIndexHtml(
           req.originalUrl!,
           await environment.render(
-            template ? template + ".html" : "pages\\404.html",
+            path.join(root, template ? template + ".html" : "pages\\404.html"),
             context
           )
         )
       : await environment.render(
-          template ? template + ".html" : "pages\\404.html",
+          path.join(root, template ? template + ".html" : "pages\\404.html"),
           context
         );
 
